@@ -12,12 +12,44 @@ This document defines how to take this Project Operating System repository and i
 
 ### 1. Clone / copy the Operating System
 
+**Step 1a — Clone:**
+
 ```bash
 git clone <this-repo-url> <new-project-dir>
 cd <new-project-dir>
-# Remove existing Git history to start fresh:
-rm -rf .git && git init && git add -A && git commit -m "Initial: project setup"
-# Set new remote:
+```
+
+**Step 1b — Replace Git history with a fresh initial commit:**
+
+Use the cross-platform `git checkout --orphan` method (works on Linux, macOS, and Windows):
+
+```bash
+# Create a new branch with no history:
+git checkout --orphan new-main
+# Stage all Operating System files:
+git add -A
+# Create the first commit of the new project:
+git commit -m "Initial: project setup"
+# Replace main with the clean branch:
+git branch -D main
+git branch -m new-main main
+```
+
+> 💡 **What this does:** Creates a fresh Git history containing the Operating System
+> files as a single initial commit. The original clone history becomes unreachable
+> and will be garbage-collected. No `rm` commands required — works on all platforms.
+
+**Alternative (direct removal):**
+
+| Platform | Command |
+|----------|---------|
+| Linux / macOS | `rm -rf .git && git init && git add -A && git commit -m "Initial: project setup"` |
+| Windows (CMD) | `rmdir /s /q .git && git init && git add -A && git commit -m "Initial: project setup"` |
+| Windows (PowerShell) | `Remove-Item -Recurse -Force .git; git init; git add -A; git commit -m "Initial: project setup"` |
+
+**Step 1c — Connect to new remote:**
+
+```bash
 git remote add origin <new-project-repo-url>
 git push -u origin main
 ```
