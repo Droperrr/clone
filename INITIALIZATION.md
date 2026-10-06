@@ -19,35 +19,43 @@ git clone <this-repo-url> <new-project-dir>
 cd <new-project-dir>
 ```
 
-**Step 1b — Replace Git history with a fresh initial commit:**
+**Step 1b — Remove old Git history and create a fresh repository:**
 
-Use the cross-platform `git checkout --orphan` method (works on Linux, macOS, and Windows):
-
-```bash
-# Create a new branch with no history:
-git checkout --orphan new-main
-# Stage all Operating System files:
-git add -A
-# Create the first commit of the new project:
-git commit -m "Initial: project setup"
-# Replace main with the clean branch:
-git branch -D main
-git branch -m new-main main
-```
-
-> 💡 **What this does:** Creates a fresh Git history containing the Operating System
-> files as a single initial commit. The original clone history becomes unreachable
-> and will be garbage-collected. No `rm` commands required — works on all platforms.
-
-**Alternative (direct removal):**
+Delete the entire `.git` directory of the cloned template, then initialize
+a new independent Git repository. The old remote, history, and refs are
+completely removed.
 
 | Platform | Command |
 |----------|---------|
-| Linux / macOS | `rm -rf .git && git init && git add -A && git commit -m "Initial: project setup"` |
-| Windows (CMD) | `rmdir /s /q .git && git init && git add -A && git commit -m "Initial: project setup"` |
-| Windows (PowerShell) | `Remove-Item -Recurse -Force .git; git init; git add -A; git commit -m "Initial: project setup"` |
+| Linux / macOS | `rm -rf .git` |
+| Windows PowerShell | `Remove-Item -Recurse -Force .git` |
+| Windows CMD | `rmdir /s /q .git` |
 
-**Step 1c — Connect to new remote:**
+Then, on all platforms:
+
+```bash
+git init
+git add -A
+git commit -m "Initial: project setup"
+git branch -M main
+```
+
+> ⚠️ **Safety:** Run the delete command only inside the newly cloned directory
+> (`<new-project-dir>`). Double-check with `pwd` before deleting.
+
+**Step 1c — Verify clean state:**
+
+```bash
+# No old remote should remain:
+git remote -v
+# Expected output: (empty)
+
+# Only the new initial commit exists:
+git log --oneline
+# Expected output: <sha> Initial: project setup
+```
+
+**Step 1d — Connect to new remote:**
 
 ```bash
 git remote add origin <new-project-repo-url>
@@ -56,6 +64,9 @@ git push -u origin main
 
 > ⚠️ Replace `<this-repo-url>` with the actual clone repository URL.
 > Replace `<new-project-repo-url>` with the new project's GitHub repository URL.
+>
+> If `git push` fails because the new remote repository is empty, use:
+> `git push -u origin main` (the first push creates the branch on the remote).
 
 ### 2. Establish Project Identity
 
